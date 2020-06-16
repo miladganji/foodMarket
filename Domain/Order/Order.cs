@@ -9,13 +9,12 @@ namespace Domain.Order
         private Order()
         { 
            }
-        public Order(User.Users user,OrderLine orderLine)
+        public Order(User.Users user,List<OrderLine> orderLines)
         {
             this.User = user;
-            AddOrderLine(orderLine);
-            CalculateTotalPrice();
-            calculateTax();
-            CalculatetotalAmount();
+            //CalculateTotalPrice();
+            //calculateTax();
+            //CalculatetotalAmount();
         }
         public Guid  OrderNumber { get;private set; }
         public OrderState OrderState { get; private set; }
@@ -26,7 +25,14 @@ namespace Domain.Order
         public List<OrderLine> OrderLine { get; private set; }
         public User.Users User { get; private set; }
 
-
+        public void SetOrderId()
+        {
+            OrderNumber = Guid.NewGuid();
+        }
+        public void CreateDateMethod()
+        {
+            CreateDate = DateTime.Now;
+        }
         public void CancelOrder()
         {
 

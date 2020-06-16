@@ -33,7 +33,8 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(new Foodconfiguration());
             modelBuilder.ApplyConfiguration(new Userconfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
-            modelBuilder.ApplyConfiguration(new OrderLineconfiguration());
+            //modelBuilder.ApplyConfiguration(new OrderLineconfiguration());
+            //modelBuilder.ApplyConfiguration(new OrderLineconfiguration());
 
             
 

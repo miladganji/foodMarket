@@ -19,31 +19,40 @@ namespace Application.PipeLine.EvenSourcing
         {
             this.applicationDbContext = applicationDbContext;
         }
-        public  Task<Tresponse> Handle(Trequest request, CancellationToken cancellationToken, RequestHandlerDelegate<Tresponse> next)
+        public   Task<Tresponse> Handle(Trequest request, CancellationToken cancellationToken, RequestHandlerDelegate<Tresponse> next)
         {
             //await _logger.LogInformation($"Handling {typeof(TRequest).Name}");
             //add event sourcing with is not susscess
-            Domain.Events.Event @event = new Domain.Events.Event(DateTime.Now) {
-                actionName = typeof(Trequest).Name,
-                EntityName = "",
-                Issucces = false,
-                jsonRequest = JsonConvert.SerializeObject(request),
-                jsonResponse=null,
-                
-            };
+            try
+            {
+                Domain.Events.Event @event = new Domain.Events.Event(DateTime.Now)
+                {
+                    actionName = typeof(Trequest).Name,
+                    EntityName = "",
+                    Issucces = false,
+                    jsonRequest = JsonConvert.SerializeObject(request),
+                    jsonResponse = null,
 
-            var rer1 = applicationDbContext.Add(@event);
-            var rerdata1 = applicationDbContext.SaveChanges();
+                };
 
-            var response =  next();
-            //await _logger.LogInformation($"Handled {typeof(TResponse).Name}");
-            var myevent = applicationDbContext.events.FirstOrDefault(a=>a.Id==@event.Id);
-            myevent.jsonResponse = response.Result.ToString();
-            myevent.Issucces =true;
+                var rer1 = applicationDbContext.Add(@event);
+                var rerdata1 = applicationDbContext.SaveChanges();
 
-            applicationDbContext.Entry<Domain.Events.Event>(myevent).State = EntityState.Modified;
-             applicationDbContext.SaveChanges();
-            return response;
+                var response = next();
+                //await _logger.LogInformation($"Handled {typeof(TResponse).Name}");
+                var myevent = applicationDbContext.events.FirstOrDefault(a => a.Id == @event.Id);
+                myevent.jsonResponse = response.Result.ToString();
+                myevent.Issucces = true;
+
+                applicationDbContext.Entry<Domain.Events.Event>(myevent).State = EntityState.Modified;
+                applicationDbContext.SaveChanges();
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message) ;
+            }
         }
     }
 }

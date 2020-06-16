@@ -21,6 +21,8 @@ using AutoMapper;
 using Application.PipeLine.User;
 using Microsoft.OpenApi.Models;
 using Application.PipeLine.EvenSourcing;
+using Application.Services.User;
+using Application.Repositories.User;
 
 namespace trainingFoodMarket
 {
@@ -40,11 +42,14 @@ namespace trainingFoodMarket
             //var encryptionkey = Encoding.UTF8.GetBytes("16CharEncryptKey");
 
 
-
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "food Market Api Documentation", Version = "v1" });
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<ApplicationDbContext>(config=> {
                 config.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-            });
+            },ServiceLifetime.Transient);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
@@ -78,16 +83,18 @@ namespace trainingFoodMarket
             services.AddMediatR(typeof(CreateUserCommand).GetTypeInfo().Assembly);
             services.AddScoped(typeof(IPipelineBehavior<CreateUserCommand, Guid>), typeof(CreateUserCommandPipeline<CreateUserCommand, Guid>));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(eventSourcingPipeline<,>));
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "food Market Api Documentation", Version = "v1" });
-            });
+            services.AddTransient<IUserRepository, Userrepository>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API");
+            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

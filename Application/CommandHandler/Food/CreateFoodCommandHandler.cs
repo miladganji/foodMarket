@@ -21,11 +21,19 @@ namespace Application.CommandHandler.Food
         }
         public async Task<Guid> Handle(CreatefoodCommand request, CancellationToken cancellationToken)
         {
-            Domain.Food.Food food = new Domain.Food.Food("testganji", foodType.Irani, 1000);
-            await applicationDbContext.AddAsync(food);
-            await applicationDbContext.SaveChangesAsync();
-               
-              return  Guid.NewGuid() ;
+            try
+            {
+                Domain.Food.Food food = new Domain.Food.Food(request.FoodName, request.FoodType, request.Price);
+              await  applicationDbContext.tblFood.AddAsync(food);
+                await applicationDbContext.SaveChangesAsync();
+
+                return food.Id;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message) ;
+            }
         }
     }
 }
