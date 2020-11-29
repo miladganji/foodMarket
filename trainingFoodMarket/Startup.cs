@@ -51,7 +51,7 @@ namespace trainingFoodMarket
                 config.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             },ServiceLifetime.Transient);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
+            .AddJwtBearer(options =>
 {
  var secretkey = Encoding.UTF8.GetBytes("LongerThan-16Char-SecretKey");
  var encryptionkey = Encoding.UTF8.GetBytes("16CharEncryptKey");
